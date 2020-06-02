@@ -1,0 +1,30 @@
+//added below the body
+<div style="display:none" class="custom_loader" >
+    <div class="custom_loding_image">
+      <img src="https://cdn.shopify.com/s/files/1/0313/5769/8181/files/loader.gif?v=1580890919">  
+    </div>
+  </div>
+
+<style>
+.custom_loader {
+    text-align: center;
+    position: fixed;
+    top: 0px;
+    bottom: 0px;
+    z-index: 9999;
+    left: 0px;
+    right: 0px;
+    background: #25282b42;
+    width: 100%;
+}
+.custom_loader .custom_loding_image {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+}
+.custom_loader .custom_loding_image > img {
+    height: 80px;
+    background: #fff;
+}
+</style>
