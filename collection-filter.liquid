@@ -1,0 +1,134 @@
+{%- capture current_tags_new -%}{%- assign colors = current_tags | split: "_"  -%}{{ colors[1] |remove: '"]' | downcase}}{%- endcapture -%} 
+
+{%- capture current_type -%}
+{%- assign currentCol = collection.handle -%}
+    {%- for collection in collections -%}
+      {%- if collection.handle == currentCol -%}{{ collection.title | downcase | remove : ' ' }}{%- endif -%}
+    {%- endfor -%}
+{%- endcapture -%}
+
+<div class="product-type ">
+<div class="custom_tag_filter custom_active">
+  <h2><span><i class="fa fa-minus" aria-hidden="true"></i><i class="fa fa-plus" aria-hidden="true"></i>Product Type</span></h2>
+<ul>
+  {% for product_type in shop.types %}
+  {% assign type_handle = product_type | handleize %}
+  {% assign type_collection = collections[type_handle] %}
+{% assign match_type= product_type | downcase | remove : ' '%}
+  <li class="coll-filter coll-filter-producttype {% if product.type == product_type %}current{% endif %}">
+    {% if type_collection == empty %}
+<span><input class="cf-checkbox  {%if product_type == current_type%}active-div{% endif %}" name="type[]" data-group-name="type" type="radio" value="{{ type_collection.title | handle }}" id="m1" {%if product_type == current_type%}checked{%endif%}>
+  <label class="whatever" for="r{{forloop.index}}"></label> </span>   
+<label>{{ product_type | link_to_type  }}</label>
+    {% else %}
+   <span> <input class="cf-checkbox  {% if current_type == match_type  %}active-div{% endif %}" name="type[]" data-group-name="type" value="{{ type_collection.title | handle }}" type="radio" value="" id="m1" {{match_type}}--{{current_type}} {% if current_type == match_type  %} checked {% endif %} >
+     <label class="whatever" for="r{{forloop.index}}"></label> </span>   
+    <label> <a>{{ type_collection.title  }}</a></label>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+  </div>
+<!---------------comment------------------>
+{%comment%}{% if collection.url != blank %}
+ <div class="custom_tag_filter custom_active">
+<h2><span><i class="fa fa-minus" aria-hidden="true"></i><i class="fa fa-plus" aria-hidden="true"></i>Shop by vendor:</span></h2>
+<ul>
+	{% for product_vendor in collection.all_vendors %}
+	<li class="coll-filter">
+		{% if current_tags contains product_vendor %}
+	<span>	<input class="cf-checkbox" name="vendor[]" data-group-name="vendor" type="checkbox" value="" id="m" >
+      <label class="whatever" for="r{{forloop.index}}"></label></span>
+      <label><a class="active" data-href="{{ collection.url }}">{{ product_vendor }}</a></label>
+		{% else %}
+	<span>	<input class="cf-checkbox" name="vendor[]" data-group-name="vendor" type="checkbox" value="" id="m" >
+      <label class="whatever" for="r{{forloop.index}}"></label></span>
+      <label><a data-href="{{ collection.url }}/{{ product_vendor | handle }}">{{ product_vendor }}</a></label>
+		{% endif %}
+	</li>
+	{% endfor %}
+</ul>
+  </div>
+{% endif %}{%endcomment%}
+
+ {%comment%} <h2>Tag Filter:</h2>
+<ul class="subnav clearfix">
+  <li{% unless current_tags %} class="active"{% endunless %}>
+    {% if collection.handle %}
+    <a href="/collections/{{ collection.handle }}{% if collection.sort_by %}?sort_by={{ collection.sort_by }}{% endif %}">All</a>
+    {% elsif collection.current_type %}
+    <a href="{{ collection.current_type | url_for_type | sort_by: collection.sort_by }}">All</a>
+    {% elsif collection.current_vendor %}
+    <a href="{{ collection.current_vendor | url_for_vendor | sort_by: collection.sort_by }}">All</a>
+    {% endif %}
+  </li>
+</ul>{%endcomment%}
+<!-----------comment----------------------->
+{% capture tagsName %}
+{% for tag in collection.all_tags %}
+{% assign colors = tag | split: "_"  %}
+{% if tag contains "_" %}  
+ {{ colors[0] | downcase}}
+{%endif%}
+    {% endfor %} 
+  {% endcapture %}   
+
+{% assign new= tagsName | split:  ' ' | uniq %}
+{%if new !=blank %}
+{% for neww in new %}
+ 
+  <div class="custom_tag_filter custom_active">
+    <h2><span><i class="fa fa-minus" aria-hidden="true"></i><i class="fa fa-plus" aria-hidden="true"></i>PEARL {{neww | upcase}}</span></h2>
+<ul>
+{% for tag in collection.all_tags %}
+{% assign tagnew= tag | downcase %}
+{% if tagnew contains neww %}     
+{% assign colors = tag | split: "_"  %}
+{% assign match = colors[1] | downcase  %}
+<li class="coll-filter">
+<span>  <input class="cf-checkbox-tag" name="{{neww}}[]" data-group-name="{{neww}}" value="{{ tag | handleize }}" type="checkbox" value="" id="test{{forloop.index}}"  {% if current_tags_new == match  %} checked {% endif %}>
+  <label class="whatever" for="r{{forloop.index}}"></label></span>
+<label>  
+<a data-href="/collections/all/{{ tag | handleize }}">{{ colors[1] }}</a>
+  </label></li>
+{%endif%}
+    {% endfor %} 
+  </ul>
+  </div>
+
+{%endfor%}
+{%endif%}
+
+
+</div>
+
+<style>
+  .custom_tag_filter.custom_active i.fa.fa-minus{display:block;}
+  .custom_tag_filter.custom_active i.fa.fa-plus{display:none;;}
+.custom_tag_filter i.fa.fa-minus{display:none ;}
+.custom_tag_filter.custom_active h2 span {
+    display: flex;
+}
+
+.whatever{
+    background-color: #fff;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+	border:1px solid #000;
+}
+
+.custom_tag_filter input[type=checkbox], .custom_tag_filter input[type=radio]{
+    display: none;
+}
+
+.custom_tag_filter input[type=checkbox]:checked + .whatever, .custom_tag_filter input[type=radio].active-div + .whatever{
+    background-color: #94755e;
+}
+.custom_tag_filter input[type=checkbox] {
+    display: none;
+}
+</style>
+
+
+
